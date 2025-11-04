@@ -34,7 +34,9 @@ class Config:
                 continue
             self.validate_guild(guild)
             guild['tokenValue'] = self._tokens[guild['tokenName']]
-            if guild['guildId'] == '@me':
+            if 'isChannel' in guild and guild['isChannel'] is True:
+                guild['type'] = 'exportchannel'
+            elif guild['guildId'] == '@me':
                 guild['type'] = 'exportdm'
             else:
                 guild['type'] = 'exportguild'
@@ -165,6 +167,8 @@ class CommandRunner:
                 command = f"{dce_path} exportguild --guild {guild['guildId']} --include-threads All {common_args} {custom_args}"
             elif guild['type'] == 'exportdm':
                 command = f"{dce_path} exportdm {common_args} {custom_args}"
+            elif guild['type'] == 'exportchannel':
+                command = f"{dce_path} export -c {guild['guildId']} {common_args} {custom_args}"
             else:
                 print(f'  Unknown export type {guild["type"]}')
                 exit(1)
